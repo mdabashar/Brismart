@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brismart Online</title>
+  <meta name="description" content="Clickable prototype of an online store for Brismart, a Bangladeshi grocery in Woolloongabba, Brisbane.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Hind+Siliguri:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="proto-banner">Prototype only — sample products and prices. No real orders or payments are taken.</div>
+
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a href="#/" class="logo" aria-label="Brismart home">
+        <span class="logo-mark">B</span>
+        <span class="logo-text">Bris<b>mart</b></span>
+      </a>
+      <form class="search" id="searchForm" role="search">
+        <input id="searchInput" type="search" placeholder="Search rice, hilsa, mango achar…" aria-label="Search products">
+        <button type="submit" aria-label="Search">🔍</button>
+      </form>
+      <a href="#/cart" class="cart-btn" aria-label="Cart">
+        🛒 <span class="cart-label">Cart</span>
+        <span class="cart-count" id="cartCount">0</span>
+        <span class="cart-total" id="cartTotal">$0.00</span>
+      </a>
+    </div>
+    <nav class="cat-nav" aria-label="Categories">
+      <div class="wrap cat-nav-row" id="catNav"></div>
+    </nav>
+  </header>
+
+  <main id="app" class="wrap"></main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h4>Brismart</h4>
+        <p>80 Ipswich Rd, Woolloongabba QLD 4102</p>
+        <p>Phone: (07) 3891 9444</p>
+      </div>
+      <div>
+        <h4>Opening hours</h4>
+        <p>Mon–Fri 6am – midnight</p>
+        <p>Sat 7am – midnight · Sun 8am – midnight</p>
+      </div>
+      <div>
+        <h4>In-store services</h4>
+        <p>Western Union send &amp; collect</p>
+        <p>Amazon parcel returns · Free parking</p>
+      </div>
+    </div>
+    <p class="wrap fine">Prototype built for demonstration. Product names, prices and images are placeholders.</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
