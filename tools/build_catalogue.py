@@ -147,6 +147,16 @@ for p, good in zip(keep, ok):
         row["brand"] = p["brand"]["name"]
     rows.append(row)
 
+# Items Hutbazar sells by weight as one price; shown here as a price range.
+RANGES = {
+    2990: {"name": "Ayer Fish (Cut)", "size": "800g–2kg piece", "price": 12.79, "max": 31.98,
+           "note": "$15.99 per kg — the final price depends on the weight of your piece."},
+    2989: {"name": "Boal Fish (Cut)", "size": "800g–2kg piece", "price": 13.20, "max": 33.00,
+           "note": "$16.50 per kg — the final price depends on the weight of your piece."},
+}
+for r in rows:
+    r.update(RANGES.get(r["id"], {}))
+
 rows.sort(key=lambda r: r["id"], reverse=True)
 lines = ",\n".join("  " + json.dumps(r, ensure_ascii=False) for r in rows)
 (web / "products.js").write_text(

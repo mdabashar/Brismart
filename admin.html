@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Brismart · Staff Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Hind+Siliguri:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="admin.css?v=8">
+</head>
+<body class="admin">
+  <header class="admin-header">
+    <div class="wrap admin-header-row">
+      <a href="index.html" class="logo" aria-label="Brismart shop"><img src="assets/brismart-logo.png" alt="Brismart Food &amp; Grocery Store" width="647" height="160"></a>
+      <span class="admin-title">Staff dashboard</span>
+      <div class="admin-user" id="userBox" hidden>
+        <span id="userEmail"></span>
+        <button class="btn btn-outline btn-sm" id="signOutBtn" type="button">Sign out</button>
+      </div>
+      <a href="index.html" class="btn btn-sm btn-light-green">View shop</a>
+    </div>
+  </header>
+
+  <main class="wrap admin-main">
+    <!-- Not configured -->
+    <section id="setupPanel" class="panel narrow" hidden>
+      <h1>Connect the database</h1>
+      <p>The dashboard needs a Supabase project. Follow the steps in <b>README.md → Staff dashboard setup</b>, then add the project URL and public key to <code>config.js</code>.</p>
+    </section>
+
+    <!-- Sign in -->
+    <section id="loginPanel" class="panel narrow" hidden>
+      <h1>Staff sign in</h1>
+      <p class="note">Only Brismart staff accounts can change products.</p>
+      <form id="loginForm">
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" required></div>
+        <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
+        <p class="form-error" id="loginError" role="alert"></p>
+        <button class="btn btn-primary btn-block" type="submit" id="loginBtn">Sign in</button>
+      </form>
+    </section>
+
+    <!-- Signed in but not staff -->
+    <section id="deniedPanel" class="panel narrow" hidden>
+      <h1>No staff access</h1>
+      <p>This account is signed in but isn't on the staff list. Ask the owner to add it in Supabase (see README).</p>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashPanel" hidden>
+      <div class="dash-head">
+        <div>
+          <h1>Products</h1>
+          <p class="note" id="stats"></p>
+        </div>
+        <button class="btn btn-primary" id="addBtn" type="button">＋ Add product</button>
+      </div>
+
+      <div class="dash-tools">
+        <input id="q" type="search" placeholder="Search name, Bengali name or brand" aria-label="Search products">
+        <select id="catFilter" aria-label="Category"></select>
+        <select id="statusFilter" aria-label="Status">
+          <option value="all">All products</option>
+          <option value="visible">Visible</option>
+          <option value="hidden">Hidden</option>
+          <option value="range">Price range</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="ptable">
+          <thead><tr><th></th><th>Product</th><th>Category</th><th>Price</th><th>Visible</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add / edit product -->
+  <dialog id="editDialog" class="edit-dialog">
+    <form id="editForm" method="dialog" novalidate>
+      <div class="dlg-head"><h2 id="dlgTitle">Edit product</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+      <div class="dlg-body">
+        <div class="form-grid">
+          <div class="field full"><label for="f_name">Name (English) *</label><input id="f_name" name="name" required></div>
+          <div class="field"><label for="f_bn">Bengali name</label><input id="f_bn" name="bn" class="bn"></div>
+          <div class="field"><label for="f_brand">Brand</label><input id="f_brand" name="brand"></div>
+          <div class="field"><label for="f_cat">Category *</label><select id="f_cat" name="cat" required></select></div>
+          <div class="field"><label for="f_size">Size / pack</label><input id="f_size" name="size" placeholder="e.g. 400g, 1L, whole fish 1–1.5 kg"></div>
+        </div>
+
+        <fieldset class="price-box">
+          <legend>Price</legend>
+          <div class="seg">
+            <label><input type="radio" name="ptype" value="fixed" checked> Fixed price</label>
+            <label><input type="radio" name="ptype" value="range"> Price range</label>
+          </div>
+          <div class="form-grid three">
+            <div class="field"><label for="f_price" id="priceLabel">Price ($) *</label><input id="f_price" name="price" type="number" min="0" step="0.01" inputmode="decimal" required></div>
+            <div class="field" id="maxField"><label for="f_max">Highest price ($) *</label><input id="f_max" name="max" type="number" min="0" step="0.01" inputmode="decimal"></div>
+            <div class="field"><label for="f_unit">Sold</label>
+              <select id="f_unit" name="unit">
+                <option value="">each</option><option value="kg">per kg</option><option value="pack">per pack</option><option value="dozen">per dozen</option><option value="L">per litre</option>
+              </select>
+            </div>
+          </div>
+          <p class="note" id="pricePreview"></p>
+        </fieldset>
+
+        <div class="photo-row">
+          <div class="photo-preview" id="photoPreview"></div>
+          <div>
+            <div class="field"><label for="f_photo">Photo</label><input id="f_photo" type="file" accept="image/jpeg,image/png,image/webp"></div>
+            <p class="note">JPG, PNG or WebP, up to 5 MB. A square photo on a white background looks best.</p>
+            <button type="button" class="btn btn-outline btn-sm" id="removePhoto">Remove photo</button>
+            <div class="field" style="margin-top:10px"><label for="f_icon">Emoji when there's no photo</label><input id="f_icon" name="icon" maxlength="4" style="width:80px"></div>
+          </div>
+        </div>
+
+        <div class="field"><label for="f_note">Description / note</label><textarea id="f_note" name="note" rows="2" placeholder="Shown on the product page, e.g. how a price range is worked out"></textarea></div>
+        <label class="check"><input type="checkbox" id="f_active" name="active" checked> Visible to customers</label>
+        <p class="form-error" id="editError" role="alert"></p>
+      </div>
+      <div class="dlg-foot">
+        <button type="button" class="btn btn-danger-outline" id="deleteBtn">Delete</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-outline" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js?v=8"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="products.js?v=8"></script>
+  <script src="data.js?v=8"></script>
+  <script src="admin.js?v=8"></script>
+</body>
+</html>

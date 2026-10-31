@@ -325,3 +325,11 @@ legend { font-weight: 700; font-size: 17px; margin-bottom: 10px; }
   .view-bd .hero-main h1 { font-size: 30px; }
   .card-img .pimg { padding: 6px; }
 }
+
+/* Price ranges and per-kg pricing */
+.price.range { font-size: 19px; }
+.price .per { font-size: 14px; font-weight: 600; color: var(--muted); }
+.range-note { font-size: 12px; color: var(--muted); margin-top: -2px; }
+.pdp .price.range { font-size: 28px; }
+.staff-link { color: #cfd8d2; text-decoration: underline; opacity: .8; }
+@media (max-width: 640px) { .price.range { font-size: 15px; } }

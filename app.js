@@ -4,7 +4,12 @@ const FREE_DELIVERY_MIN = 60;
 const DELIVERY_FEE = 7.95;
 const $app = document.getElementById("app");
 const catById = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
-const productById = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+let productById = {};
+function indexProducts() {
+  PRODUCTS = PRODUCTS.filter(p => catById[p.cat]);
+  productById = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+}
+indexProducts();
 
 // ---------- Storage helpers ----------
 function load(key, fallback) {
@@ -63,14 +68,22 @@ function cartLines() {
   return Object.entries(cart).map(([id, qty]) => ({ p: productById[id], qty })).filter(l => l.p);
 }
 function cartSubtotal() { return cartLines().reduce((s, l) => s + l.p.price * l.qty, 0); }
+function cartSubtotalMax() { return cartLines().reduce((s, l) => s + maxPrice(l.p) * l.qty, 0); }
+function cartHasRange() { return cartLines().some(l => isRange(l.p)); }
 function cartCount() { return cartLines().reduce((s, l) => s + l.qty, 0); }
 
 const money = n => "$" + n.toFixed(2);
+// Price ranges: some items (e.g. fish sold by size) have a min price and a max price.
+const isRange = p => p.max != null && p.max > p.price;
+const maxPrice = p => (isRange(p) ? p.max : p.price);
+const rangeText = (lo, hi) => (hi > lo ? `${money(lo)} – ${money(hi)}` : money(lo));
+const priceText = p => rangeText(p.price, maxPrice(p));
+const perText = p => (p.unit ? `per ${p.unit}` : "each");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 function updateHeader() {
   document.getElementById("cartCount").textContent = cartCount();
-  document.getElementById("cartTotal").textContent = money(cartSubtotal());
+  document.getElementById("cartTotal").textContent = (cartHasRange() ? "~" : "") + money(cartSubtotal());
 }
 
 let toastTimer;
@@ -94,13 +107,14 @@ function qtyControl(p, small = false) {
   if (!q) return `<button class="btn btn-primary btn-block" data-add="${p.id}">${T("add")}</button>`;
   return `<div class="qty ${small ? "small" : ""}">
     <button data-dec="${p.id}" aria-label="Remove one">−</button>
-    <span>${q}</span>
+    <span>${q}${p.unit ? ` ${esc(p.unit)}` : ""}</span>
     <button data-inc="${p.id}" aria-label="Add one">+</button>
   </div>`;
 }
 
 function priceHtml(p) {
-  return `<div class="price ${p.was ? "special" : ""}">${money(p.price)}${p.was ? `<span class="was">${money(p.was)}</span>` : ""}</div>`;
+  return `<div class="price ${p.was ? "special" : ""} ${isRange(p) ? "range" : ""}">${priceText(p)}${p.unit ? `<span class="per"> /${esc(p.unit)}</span>` : ""}${p.was ? `<span class="was">${money(p.was)}</span>` : ""}</div>
+    ${isRange(p) ? `<div class="range-note">Price depends on size</div>` : ""}`;
 }
 
 function productCard(p) {
@@ -140,7 +154,7 @@ function homePage() {
   const v = V();
   const sections = v.sections.map(s => `
     <div class="section-head"><h2 class="${view === "bd" ? "bn" : ""}">${s.title}${s.sub ? ` <small>${s.sub}</small>` : ""}</h2></div>
-    <div class="grid">${s.ids.map(id => productCard(productById[id])).join("")}</div>`).join("");
+    <div class="grid">${s.ids.map(id => productById[id]).filter(Boolean).map(productCard).join("")}</div>`).join("");
 
   const discover = v.discover.length ? `
     <section class="discover">
@@ -221,7 +235,7 @@ function categoryPage(id) {
 function specialsPage() {
   const title = view === "bd" ? "এই সপ্তাহের অফার" : "This week's specials";
   return listingPage({ title, sub: view === "bd" ? "Special of the week" : "", crumbs: T("specials"),
-    items: V().specials.map(id => productById[id]), activeCat: "specials" });
+    items: V().specials.map(id => productById[id]).filter(Boolean), activeCat: "specials" });
 }
 
 function searchPage(q) {
@@ -270,6 +284,8 @@ function cartPage() {
       <a href="#/" class="btn btn-primary">Start shopping</a></div>`;
   }
   const sub = cartSubtotal();
+  const subMax = cartSubtotalMax();
+  const ranged = cartHasRange();
   const toFree = Math.max(0, FREE_DELIVERY_MIN - sub);
   return `
   <div class="page-title"><h1>Your cart</h1><span class="sub">${cartCount()} items</span></div>
@@ -280,11 +296,11 @@ function cartPage() {
           <a href="#/product/${p.id}" class="thumb">${productImage(p, "pimg")}</a>
           <div>
             <a href="#/product/${p.id}" class="nm">${esc(p.name)}</a>
-            <div class="sz">${esc(p.size)} · ${money(p.price)} each</div>
+            <div class="sz">${esc(p.size)} · ${priceText(p)} ${perText(p)}</div>
             <button class="remove" data-remove="${p.id}">Remove</button>
           </div>
           <div data-actions="${p.id}">${qtyControl(p, true)}</div>
-          <div class="line-total">${money(p.price * qty)}</div>
+          <div class="line-total">${rangeText(p.price * qty, maxPrice(p) * qty)}</div>
         </div>`).join("")}
     </div>
     <aside class="panel">
@@ -293,9 +309,10 @@ function cartPage() {
         ? `<div class="note">Add <b>${money(toFree)}</b> more for free delivery</div>`
         : `<div class="note">✅ You've unlocked free delivery</div>`}
       <div class="progress"><div style="width:${Math.min(100, (sub / FREE_DELIVERY_MIN) * 100)}%"></div></div>
-      <div class="summary-row"><span>Subtotal</span><span>${money(sub)}</span></div>
+      <div class="summary-row"><span>Subtotal</span><span>${rangeText(sub, subMax)}</span></div>
       <div class="summary-row"><span>Delivery</span><span>Calculated at checkout</span></div>
-      <div class="summary-row total"><span>Total</span><span>${money(sub)}</span></div>
+      <div class="summary-row total"><span>${ranged ? "Estimated total" : "Total"}</span><span>${rangeText(sub, subMax)}</span></div>
+      ${ranged ? `<p class="note">Some items are priced by size or weight. We confirm the final price when we pack your order.</p>` : ""}
       <a href="#/checkout" class="btn btn-primary btn-block" style="text-align:center;margin-top:8px">Checkout</a>
       <a href="#/" class="btn btn-outline btn-block" style="text-align:center;margin-top:8px">Continue shopping</a>
     </aside>
@@ -368,8 +385,8 @@ function checkoutPage() {
 
     <aside class="panel">
       <h3 style="margin-top:0">Order summary</h3>
-      ${lines.map(({ p, qty }) => `<div class="summary-row note"><span>${qty} × ${esc(p.name)}</span><span>${money(p.price * qty)}</span></div>`).join("")}
-      <div class="summary-row" style="margin-top:14px"><span>Subtotal</span><span>${money(sub)}</span></div>
+      ${lines.map(({ p, qty }) => `<div class="summary-row note"><span>${qty}${p.unit ? ` ${esc(p.unit)}` : ""} × ${esc(p.name)}</span><span>${rangeText(p.price * qty, maxPrice(p) * qty)}</span></div>`).join("")}
+      <div class="summary-row" style="margin-top:14px"><span>Subtotal</span><span>${rangeText(sub, cartSubtotalMax())}</span></div>
       <div class="summary-row"><span>Delivery</span><span id="feeCell"></span></div>
       <div class="summary-row total"><span>Total</span><span id="totalCell"></span></div>
       <button type="submit" class="btn btn-primary btn-block" style="margin-top:8px">Place order (demo)</button>
@@ -382,11 +399,12 @@ function bindCheckout() {
   const form = document.getElementById("checkoutForm");
   if (!form) return;
   const sub = cartSubtotal();
+  const subMax = cartSubtotalMax();
   const refresh = () => {
     const delivery = form.method.value === "delivery";
     const fee = delivery && sub < FREE_DELIVERY_MIN ? DELIVERY_FEE : 0;
     document.getElementById("feeCell").textContent = delivery ? (fee ? money(fee) : "Free") : "Pick-up (free)";
-    document.getElementById("totalCell").textContent = money(sub + fee);
+    document.getElementById("totalCell").textContent = rangeText(sub + fee, subMax + fee);
     document.getElementById("addrField").style.display = delivery ? "" : "none";
   };
   form.addEventListener("change", refresh);
@@ -440,7 +458,7 @@ function notFound() {
 }
 
 // ---------- Router ----------
-function route() {
+function route(keepScroll = false) {
   const [path, query] = location.hash.replace(/^#/, "").split("?");
   const parts = (path || "/").split("/").filter(Boolean);
   let html, active = null;
@@ -463,7 +481,7 @@ function route() {
   renderCatNav(active);
   $app.innerHTML = html;
   bindCheckout();
-  window.scrollTo(0, 0);
+  if (!keepScroll) window.scrollTo(0, 0);
 }
 
 // ---------- Events ----------
@@ -504,7 +522,36 @@ document.getElementById("searchForm").addEventListener("submit", e => {
 const urlView = new URLSearchParams(location.search).get("view");
 if (VIEWS[urlView]) { view = urlView; store("brismart-view", view); }
 
-window.addEventListener("hashchange", route);
+window.addEventListener("hashchange", () => route());
 applyView();
 updateHeader();
 route();
+loadLiveProducts();
+
+// ---------- Live catalogue (Supabase) ----------
+// The page renders straight away from the built-in catalogue, then swaps in the live one.
+function productFromRow(r) {
+  return {
+    id: Number(r.id), cat: r.cat, name: r.name, bn: r.bn || undefined, brand: r.brand || undefined,
+    size: r.size || "each", price: Number(r.price), max: r.price_max != null ? Number(r.price_max) : undefined,
+    unit: r.price_unit || undefined, img: r.img || undefined, icon: r.icon || "🛒", note: r.note || undefined,
+  };
+}
+
+async function loadLiveProducts() {
+  const cfg = window.BRISMART_CONFIG || {};
+  if (!cfg.supabaseUrl || !cfg.supabaseAnonKey || !window.supabase) return;
+  try {
+    const client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+    const { data, error } = await client.from("products").select("*").eq("active", true).order("id", { ascending: false });
+    if (error) throw error;
+    if (!data.length) return;
+    PRODUCTS = data.map(productFromRow);
+    indexProducts();
+    updateHeader();
+    // Don't wipe a checkout form the customer has started filling in.
+    if (!location.hash.startsWith("#/checkout")) route(true);
+  } catch (err) {
+    console.warn("Live catalogue unavailable, using built-in products.", err);
+  }
+}

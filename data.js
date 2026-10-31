@@ -38,15 +38,18 @@ const CATEGORIES = [
     au: "Rice cakes (pitha), date-palm jaggery and festival essentials.", bdText: "চিতই, পুলি পিঠা, খেজুরের গুড়, পিঠার খোলা।" },
 ];
 
-// Hot food is sold in store; these are prototype items (not on Hutbazar yet).
-const HOT_FOOD = [
-  { id: 9001, cat: "hot", name: "Hot Chips (Large)", size: "large", price: 8.99, icon: "🍟", note: "Freshly fried, with your choice of sauce." },
-  { id: 9002, cat: "hot", name: "Hot Dog", size: "each", price: 5.5, icon: "🌭", note: "Grilled sausage in a soft roll." },
-  { id: 9003, cat: "hot", name: "Chicken Biryani Box", bn: "চিকেন বিরিয়ানি", size: "regular", price: 13.99, icon: "🍛", note: "Fragrant biryani with egg and salad." },
-  { id: 9004, cat: "hot", name: "Fuchka Plate (8 pcs)", bn: "ফুচকা", size: "8 pcs", price: 9.99, icon: "🥙", note: "Crisp shells with spiced chickpeas and tamarind water." },
+// Items not on Hutbazar yet: in-store hot food and whole hilsa sold by weight (placeholder prices).
+// One JSON object per line — tools/make_seed.py reads these into supabase/seed.sql.
+const EXTRA_PRODUCTS = [
+  {"id": 9001, "cat": "hot", "name": "Hot Chips (Large)", "size": "large", "price": 8.99, "icon": "🍟", "note": "Freshly fried, with your choice of sauce."},
+  {"id": 9002, "cat": "hot", "name": "Hot Dog", "size": "each", "price": 5.5, "icon": "🌭", "note": "Grilled sausage in a soft roll."},
+  {"id": 9003, "cat": "hot", "name": "Chicken Biryani Box", "bn": "চিকেন বিরিয়ানি", "size": "regular", "price": 13.99, "icon": "🍛", "note": "Fragrant biryani with egg and salad."},
+  {"id": 9004, "cat": "hot", "name": "Fuchka Plate (8 pcs)", "bn": "ফুচকা", "size": "8 pcs", "price": 9.99, "icon": "🥙", "note": "Crisp shells with spiced chickpeas and tamarind water."},
+  {"id": 9010, "cat": "fish", "name": "Hilsa Fish (Ilish) Whole", "bn": "ইলিশ মাছ", "size": "whole fish, 0.8–1.5 kg", "price": 25, "max": 40, "unit": "kg", "icon": "🐟", "note": "Priced per kg — larger hilsa cost more per kg. We weigh your fish and confirm the final price before charging."},
 ];
 
-const PRODUCTS = [...HB_PRODUCTS, ...HOT_FOOD];
+// Replaced by the live catalogue when Supabase is configured (see app.js).
+let PRODUCTS = [...HB_PRODUCTS, ...EXTRA_PRODUCTS];
 
 const VIEWS = {
   au: {
@@ -93,7 +96,7 @@ const VIEWS = {
     ],
     sections: [
       { title: "এই সপ্তাহের অফার", sub: "Special of the week", ids: [3200, 3151, 3108, 2868, 3213, 3107, 3052, 3051] },
-      { title: "মাছ বাজার", sub: "Frozen deshi fish", ids: [3092, 2999, 3216, 2989, 2990, 2993, 3078, 3161] },
+      { title: "মাছ বাজার", sub: "Frozen deshi fish", ids: [9010, 2990, 2989, 3092, 2999, 3216, 2993, 3078] },
       { title: "পিঠা পার্বণ", sub: "Pitha season", ids: [3050, 3049, 3027, 3163, 3162, 3134, 3124, 2971] },
       { title: "শুঁটকি ও ভর্তা", sub: "Shutki & bhorta", ids: [3004, 3006, 3007, 3005, 3003, 3211, 3098, 3176] },
       { title: "রমজান ও ঈদ", sub: "Ramadan & Eid", ids: [2940, 3173, 2942, 3188, 3172, 2882, 3072, 2959] },

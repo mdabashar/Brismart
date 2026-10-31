@@ -38,8 +38,12 @@ Then open http://localhost:8000.
 - `index.html`: page shell (header, view toggle, navigation, footer)
 - `styles.css`: all styling, including the Deshi view theme
 - `products.js`: generated product catalogue. Don't edit by hand.
-- `data.js`: categories, the two views (category order, home sections, specials), UI text and hot food items
-- `app.js`: hash-based router, view toggle, cart and checkout logic
+- `data.js`: categories, the two views (category order, home sections, specials), UI text, and extra items (hot food, whole hilsa)
+- `app.js`: hash-based router, view toggle, price ranges, cart and checkout logic, and live catalogue loading
+- `admin.html`, `admin.js`, `admin.css`: staff dashboard (sign in, add, edit, hide, delete products, upload photos)
+- `config.js`: Supabase project URL and public key
+- `supabase/schema.sql`, `supabase/seed.sql`: database tables, security rules and the starting catalogue
+- `tools/make_seed.py`: rebuilds `supabase/seed.sql` from `products.js` and `data.js`
 - `assets/products/`: product photos (360×360 JPEG)
 - `tools/build_catalogue.py`: rebuilds `products.js` and the photos from the Hutbazar product API
 
@@ -48,4 +52,33 @@ Then open http://localhost:8000.
 curl -s "https://api.hutbazar.com.au/api/product?page=1&paginate=1000&status=1" -o products.json
 python tools/build_catalogue.py products.json .
 ```
-Category assignments and name fixes are at the top of `tools/build_catalogue.py`.
+Category assignments, name fixes and price ranges are at the top of `tools/build_catalogue.py`.
+Once the dashboard is live, edit products there instead.
+
+## Price ranges
+A product can have one price or a range (lowest to highest), and can be sold each or by weight (per kg, pack, dozen or litre).
+For example, whole hilsa shows **$25.00 – $40.00 /kg** with "Price depends on size". In the cart, range-priced items give an
+estimated total range, and checkout tells the customer the final price is confirmed when the order is packed.
+
+## Staff dashboard setup (Supabase)
+The shop works without this, from the built-in catalogue. To let staff edit products:
+
+1. **Create a project.** Sign up at [supabase.com](https://supabase.com) (free plan) and create a project. Choose the Sydney region.
+2. **Create the tables.** In the project, open **SQL Editor → New query**, paste all of `supabase/schema.sql` and click **Run**.
+   Then do the same with `supabase/seed.sql` to load the 278 products.
+3. **Turn off public sign-ups.** **Authentication → Sign In / Providers**: turn off **Allow new users to sign up**.
+4. **Create the staff login.** **Authentication → Users → Add user → Create new user**. Enter the owner's email and a strong
+   password, and tick **Auto Confirm User**.
+5. **Give that login staff access.** In the SQL Editor run (with the real email):
+   ```sql
+   insert into public.admins (user_id)
+   select id from auth.users where email = 'owner@example.com';
+   ```
+6. **Connect the site.** **Project Settings → API**: copy the **Project URL** and the **anon public** key into `config.js`,
+   then commit and push. (The anon key is designed to be public. Never put the **service_role** key in the site.)
+
+Staff then sign in at **/admin.html** (or the **Staff login** link in the footer). Changes appear on the shop for every customer
+on their next page load. Unticking **Visible to customers** hides a product without deleting it.
+
+Security: only users listed in `public.admins` can add, change or delete products or upload photos. This is enforced by the
+database's row-level security rules, so it holds even if someone copies the page code.
