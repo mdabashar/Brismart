@@ -1,90 +1,127 @@
-// Sample catalogue for the Brismart prototype. Prices are illustrative only.
+// Categories, the two shop views and curated home pages.
+// Products come from products.js (generated from the Hutbazar catalogue).
+
 const CATEGORIES = [
-  { id: "rice", name: "Rice & Grains", bn: "চাল ও শস্য", icon: "🍚", color: "#f3ead3" },
-  { id: "spices", name: "Spices & Masala", bn: "মশলা", icon: "🌶️", color: "#f8dcd2" },
-  { id: "lentils", name: "Lentils & Flour", bn: "ডাল ও আটা", icon: "🫘", color: "#f1e2c4" },
-  { id: "fish", name: "Frozen Fish & Meat", bn: "মাছ ও মাংস", icon: "🐟", color: "#d7e8f0" },
-  { id: "veg", name: "Fresh & Frozen Veg", bn: "সবজি", icon: "🥬", color: "#dcebd3" },
-  { id: "snacks", name: "Snacks & Biscuits", bn: "নাস্তা", icon: "🍪", color: "#f5e6cf" },
-  { id: "sweets", name: "Sweets & Desserts", bn: "মিষ্টি", icon: "🍮", color: "#f6dbe4" },
-  { id: "pickles", name: "Pickles & Sauces", bn: "আচার", icon: "🫙", color: "#efe0c9" },
-  { id: "drinks", name: "Tea & Drinks", bn: "চা ও পানীয়", icon: "🫖", color: "#e5dccf" },
-  { id: "hot", name: "Hot Food & Takeaway", bn: "গরম খাবার", icon: "🍟", color: "#fbe1c6" },
-  { id: "home", name: "Household & Personal", bn: "গৃহস্থালি", icon: "🧴", color: "#e1e4ec" },
+  { id: "essentials", en: "Everyday Essentials", bn: "নিত্যপ্রয়োজনীয়", icon: "🥛", color: "#e8f1f8",
+    au: "Milk, bread, eggs and the basics — open till midnight.", bdText: "দুধ, রুটি, ডিম আর দৈনন্দিন জিনিস।" },
+  { id: "hot", en: "Hot Food", bn: "গরম খাবার", icon: "🍟", color: "#fbe1c6",
+    au: "Hot chips, hot dogs and biryani boxes — order ahead and collect.", bdText: "গরম গরম চিপস, হট ডগ আর বিরিয়ানি।" },
+  { id: "drinks", en: "Drinks & Tea", bn: "চা ও পানীয়", icon: "🥤", color: "#e5dccf",
+    au: "Cold soft drinks, mango juice and strong Bangladeshi tea.", bdText: "মিরজাপুর চা, প্রাণ জুস আর কোল্ড ড্রিংক।" },
+  { id: "snacks", en: "Snacks & Biscuits", bn: "চানাচুর ও বিস্কুট", icon: "🍪", color: "#f5e6cf",
+    au: "Crunchy chanachur (spicy snack mix), toast biscuits and crackers.", bdText: "চানাচুর, মুড়ি, টোস্ট আর বিস্কুট।" },
+  { id: "frozen", en: "Frozen Snacks & Paratha", bn: "ফ্রোজেন নাস্তা ও পরোটা", icon: "🥟", color: "#e9e2f3",
+    au: "Ready-to-heat samosas, spring rolls and flaky paratha flatbread.", bdText: "সমুচা, সিঙ্গারা, ডাল পুরি আর পরোটা।" },
+  { id: "curry", en: "Curry & BBQ Mixes", bn: "রেডি মিক্স মসলা", icon: "🍛", color: "#f8dcd2",
+    au: "One packet, one great curry — butter chicken, korma, biryani and BBQ.", bdText: "রাঁধুনী, প্রাণ ও শান — সব রেডি মিক্স মসলা।" },
+  { id: "meat", en: "Halal Meat", bn: "হালাল মাংস", icon: "🍗", color: "#f6dbd6",
+    au: "Halal chicken, beef, goat and duck, cut for curries.", bdText: "হাতে জবাই করা মুরগি, গরু, খাসি ও হাঁস।" },
+  { id: "sweets", en: "Sweets & Desserts", bn: "মিষ্টি ও দই", icon: "🍮", color: "#f6dbe4",
+    au: "Gulab jamun, rosh malai and sweet yoghurt (misti doi).", bdText: "বগুড়ার দই, চমচম, রসমালাই, গুড়।" },
+  { id: "rice", en: "Rice, Dal & Flour", bn: "চাল, ডাল ও আটা", icon: "🍚", color: "#f3ead3",
+    au: "Basmati and fragrant rice, lentils and flours.", bdText: "কালিজিরা, চিনিগুড়া, মসুর ডাল, চিড়া, সুজি।" },
+  { id: "spices", en: "Spices", bn: "মসলা", icon: "🌶️", color: "#fbe3d4",
+    au: "Ground and whole spices — cumin, turmeric, chilli and more.", bdText: "গুঁড়া ও আস্ত মসলা।" },
+  { id: "pickles", en: "Sauces & Pickles", bn: "আচার ও সস", icon: "🥭", color: "#efe0c9",
+    au: "Mango pickle, chilli sauces and kasundi mustard dip.", bdText: "আমের আচার, বরই, জলপাই, কাসুন্দি।" },
+  { id: "oil", en: "Oil & Ghee", bn: "তেল ও ঘি", icon: "🫒", color: "#f1ecc8",
+    au: "Mustard oil and ghee (clarified butter).", bdText: "খাঁটি সরিষার তেল ও ঘি।" },
+  { id: "pantry", en: "Cooking Essentials", bn: "রান্নার উপকরণ", icon: "🧂", color: "#e8e6df",
+    au: "Rose water, tamarind, fried onions and other pantry helpers.", bdText: "গোলাপজল, কেওড়া, বেরেস্তা, তেঁতুল।" },
+  { id: "fish", en: "Bangladeshi Fish", bn: "মাছ বাজার", icon: "🐟", color: "#d7e8f0",
+    au: "Frozen river fish from Bangladesh — try pabda or rui in a light curry.", bdText: "রুই, পাবদা, শিং, বোয়াল, ইলিশের ডিম।" },
+  { id: "veg", en: "Deshi Vegetables", bn: "দেশি সবজি", icon: "🥬", color: "#dcebd3",
+    au: "Bangladeshi greens and vegetables, fresh and frozen.", bdText: "লাল শাক, কচু শাক, পটল, কাকরোল, করলা।" },
+  { id: "shutki", en: "Dried Fish & Bhorta", bn: "শুঁটকি ও ভর্তা", icon: "🦐", color: "#ece2d6",
+    au: "Traditional dried fish and ready-made mashes (bhorta).", bdText: "চেপা, চিংড়ি, লইট্টা শুঁটকি আর ভর্তা।" },
+  { id: "pitha", en: "Pitha & Festive", bn: "পিঠা পার্বণ", icon: "🎉", color: "#fde8cf",
+    au: "Rice cakes (pitha), date-palm jaggery and festival essentials.", bdText: "চিতই, পুলি পিঠা, খেজুরের গুড়, পিঠার খোলা।" },
 ];
 
-const PRODUCTS = [
-  // Rice & Grains
-  { id: 1, cat: "rice", name: "Chinigura Aromatic Rice", size: "5 kg", price: 24.99, was: 28.99, icon: "🍚", desc: "Small-grain fragrant rice from Bangladesh, ideal for polao and payesh." },
-  { id: 2, cat: "rice", name: "Miniket Rice", size: "10 kg", price: 32.0, icon: "🍚", desc: "Everyday Bangladeshi white rice that cooks soft and separate." },
-  { id: 3, cat: "rice", name: "Basmati Rice Extra Long", size: "5 kg", price: 21.5, icon: "🍚", desc: "Aged long-grain basmati for biryani and pulao." },
-  { id: 4, cat: "rice", name: "Flattened Rice (Chira)", size: "500 g", price: 3.49, icon: "🥣", desc: "Thick poha/chira for breakfast and snacks." },
-  { id: 5, cat: "rice", name: "Puffed Rice (Muri)", size: "500 g", price: 3.99, icon: "🥣", desc: "Crunchy muri — the base for jhal muri." },
-
-  // Spices
-  { id: 10, cat: "spices", name: "Turmeric Powder", size: "400 g", price: 5.49, icon: "🟡", desc: "Pure ground turmeric (holud)." },
-  { id: 11, cat: "spices", name: "Chilli Powder Hot", size: "400 g", price: 5.99, icon: "🌶️", desc: "Bright red ground chilli (morich)." },
-  { id: 12, cat: "spices", name: "Panch Phoron", size: "100 g", price: 2.99, icon: "🫙", desc: "Bengali five-spice blend for tarka." },
-  { id: 13, cat: "spices", name: "Beef Curry Masala", size: "200 g", price: 3.79, was: 4.49, icon: "🥘", desc: "Ready blend for rich Bangladeshi-style beef curry." },
-  { id: 14, cat: "spices", name: "Biryani Masala", size: "100 g", price: 2.99, icon: "🥘", desc: "Aromatic blend for kacchi and chicken biryani." },
-  { id: 15, cat: "spices", name: "Cumin Seeds (Jeera)", size: "200 g", price: 4.29, icon: "🌿", desc: "Whole cumin seeds." },
-
-  // Lentils & Flour
-  { id: 20, cat: "lentils", name: "Red Lentils (Masoor Dal)", size: "2 kg", price: 7.99, icon: "🫘", desc: "Split red lentils for everyday dal." },
-  { id: 21, cat: "lentils", name: "Moong Dal", size: "1 kg", price: 6.49, icon: "🫘", desc: "Split yellow mung beans." },
-  { id: 22, cat: "lentils", name: "Chickpeas (Chola)", size: "1 kg", price: 4.99, icon: "🫘", desc: "Dried chickpeas for chola bhuna — an iftar favourite." },
-  { id: 23, cat: "lentils", name: "Atta Wholemeal Flour", size: "10 kg", price: 18.99, was: 21.99, icon: "🌾", desc: "Chakki atta for roti and paratha." },
-  { id: 24, cat: "lentils", name: "Besan (Gram Flour)", size: "1 kg", price: 5.49, icon: "🌾", desc: "For piyaju, beguni and pakora." },
-
-  // Fish & Meat
-  { id: 30, cat: "fish", name: "Hilsa Fish (Ilish) Whole", size: "approx. 1 kg", price: 34.99, icon: "🐟", desc: "Frozen Padma ilish — the national fish of Bangladesh." },
-  { id: 31, cat: "fish", name: "Rui Fish Steaks", size: "1 kg", price: 16.99, icon: "🐟", desc: "Cleaned, cut rohu steaks, frozen." },
-  { id: 32, cat: "fish", name: "Pabda Fish", size: "500 g", price: 12.49, icon: "🐟", desc: "Small catfish, frozen, great for jhol." },
-  { id: 33, cat: "fish", name: "Dried Shrimp (Shutki)", size: "200 g", price: 8.99, icon: "🦐", desc: "Sun-dried shrimp for bhorta." },
-  { id: 34, cat: "fish", name: "Halal Goat Curry Cut", size: "1 kg", price: 22.99, icon: "🍖", desc: "Bone-in goat, frozen, halal certified." },
-
-  // Veg
-  { id: 40, cat: "veg", name: "Frozen Kochu Shak", size: "400 g", price: 4.99, icon: "🥬", desc: "Taro leaves, cleaned and chopped." },
-  { id: 41, cat: "veg", name: "Frozen Lau (Bottle Gourd)", size: "500 g", price: 4.49, icon: "🥒", desc: "Diced bottle gourd." },
-  { id: 42, cat: "veg", name: "Green Chillies", size: "200 g", price: 2.99, icon: "🌶️", desc: "Fresh hot green chillies." },
-  { id: 43, cat: "veg", name: "Coriander Bunch", size: "each", price: 1.99, icon: "🌿", desc: "Fresh dhonia pata." },
-
-  // Snacks
-  { id: 50, cat: "snacks", name: "Chanachur Hot Mix", size: "350 g", price: 4.49, icon: "🥜", desc: "Classic spicy Bangladeshi snack mix." },
-  { id: 51, cat: "snacks", name: "Dry Cake Biscuits", size: "300 g", price: 3.99, icon: "🍪", desc: "Crisp toast biscuits, perfect with cha." },
-  { id: 52, cat: "snacks", name: "Pran Potato Crackers", size: "100 g", price: 1.99, was: 2.49, icon: "🥔", desc: "Crunchy potato crackers." },
-  { id: 53, cat: "snacks", name: "Nimki", size: "200 g", price: 3.49, icon: "🥨", desc: "Flaky, salty fried pastry bites." },
-
-  // Sweets
-  { id: 60, cat: "sweets", name: "Rasgulla Tin", size: "1 kg", price: 7.99, icon: "⚪", desc: "Soft cheese balls in light syrup." },
-  { id: 61, cat: "sweets", name: "Gulab Jamun Tin", size: "1 kg", price: 7.99, icon: "🟤", desc: "Fried milk dumplings in rose syrup." },
-  { id: 62, cat: "sweets", name: "Chomchom (Frozen)", size: "500 g", price: 11.99, icon: "🍬", desc: "Traditional Bangladeshi sweet from Tangail." },
-  { id: 63, cat: "sweets", name: "Shemai Vermicelli", size: "200 g", price: 2.49, icon: "🍜", desc: "Roasted vermicelli for Eid shemai." },
-  { id: 64, cat: "sweets", name: "Laccha Shemai", size: "400 g", price: 4.99, icon: "🍜", desc: "Fried fine vermicelli, ready to cook." },
-
-  // Pickles
-  { id: 70, cat: "pickles", name: "Mango Achar", size: "400 g", price: 4.99, icon: "🥭", desc: "Sweet and spicy mango pickle." },
-  { id: 71, cat: "pickles", name: "Olive (Jolpai) Achar", size: "400 g", price: 5.49, icon: "🫒", desc: "Tangy Bangladeshi olive pickle." },
-  { id: 72, cat: "pickles", name: "Mustard Oil", size: "1 L", price: 6.99, icon: "🛢️", desc: "Pungent kacchi ghani mustard oil (external use label)." },
-  { id: 73, cat: "pickles", name: "Kasundi Mustard Sauce", size: "300 g", price: 3.99, icon: "🫙", desc: "Bengali fermented mustard dip." },
-
-  // Drinks
-  { id: 80, cat: "drinks", name: "Ispahani Mirzapore Tea", size: "400 g", price: 7.49, icon: "🫖", desc: "Strong Bangladeshi black tea." },
-  { id: 81, cat: "drinks", name: "Mango Juice", size: "1 L", price: 2.99, icon: "🧃", desc: "Sweet mango fruit drink." },
-  { id: 82, cat: "drinks", name: "Rooh Afza", size: "750 ml", price: 6.49, icon: "🍹", desc: "Rose syrup — a Ramadan staple." },
-  { id: 83, cat: "drinks", name: "Mango Lassi", size: "500 ml", price: 3.49, icon: "🥛", desc: "Chilled yoghurt drink." },
-
-  // Hot food
-  { id: 90, cat: "hot", name: "Hot Chips", size: "large", price: 8.99, icon: "🍟", desc: "Freshly fried chips with your choice of sauce." },
-  { id: 91, cat: "hot", name: "Hot Dog", size: "each", price: 5.5, icon: "🌭", desc: "Grilled sausage in a soft roll." },
-  { id: 92, cat: "hot", name: "Chicken Biryani Box", size: "regular", price: 13.99, icon: "🍛", desc: "Fragrant biryani with egg and salad. Pick-up only." },
-  { id: 93, cat: "hot", name: "Vegetable Singara (3 pcs)", size: "3 pcs", price: 4.5, icon: "🥟", desc: "Bengali-style samosa with spiced potato." },
-
-  // Household
-  { id: 100, cat: "home", name: "Coconut Hair Oil", size: "500 ml", price: 6.99, icon: "🥥", desc: "Pure coconut oil for hair." },
-  { id: 101, cat: "home", name: "Wheel Washing Powder", size: "1 kg", price: 4.99, icon: "🧺", desc: "Laundry detergent powder." },
-  { id: 102, cat: "home", name: "Meswak Toothpaste", size: "200 g", price: 3.99, icon: "🪥", desc: "Herbal toothpaste." },
+// Hot food is sold in store; these are prototype items (not on Hutbazar yet).
+const HOT_FOOD = [
+  { id: 9001, cat: "hot", name: "Hot Chips (Large)", size: "large", price: 8.99, icon: "🍟", note: "Freshly fried, with your choice of sauce." },
+  { id: 9002, cat: "hot", name: "Hot Dog", size: "each", price: 5.5, icon: "🌭", note: "Grilled sausage in a soft roll." },
+  { id: 9003, cat: "hot", name: "Chicken Biryani Box", bn: "চিকেন বিরিয়ানি", size: "regular", price: 13.99, icon: "🍛", note: "Fragrant biryani with egg and salad." },
+  { id: 9004, cat: "hot", name: "Fuchka Plate (8 pcs)", bn: "ফুচকা", size: "8 pcs", price: 9.99, icon: "🥙", note: "Crisp shells with spiced chickpeas and tamarind water." },
 ];
 
-// Products shown on the home page as weekly specials and staples
-const FEATURED_IDS = [1, 30, 50, 70, 80, 63, 13, 92];
+const PRODUCTS = [...HB_PRODUCTS, ...HOT_FOOD];
+
+const VIEWS = {
+  au: {
+    nav: ["essentials", "hot", "drinks", "snacks", "frozen", "curry", "meat", "sweets", "rice", "spices", "pickles", "oil", "pantry", "fish", "veg", "shutki", "pitha"],
+    tiles: ["essentials", "hot", "drinks", "snacks", "frozen", "curry", "meat", "sweets", "rice", "spices", "pickles", "oil"],
+    discover: ["fish", "veg", "shutki", "pitha"],
+    hero: {
+      kicker: "Woolloongabba · open 7 days till midnight",
+      title: "Your local grocer on Ipswich Rd",
+      text: "Milk, bread and cold drinks when you need them — plus halal meat, ready-to-heat samosas and easy curry kits.",
+      cta: ["Shop essentials", "#/category/essentials"],
+    },
+    promos: [
+      { cls: "gold", title: "🌙 Open late, every night", text: "Mon–Fri 6am to midnight, weekends from 7–8am.", href: "#/category/essentials" },
+      { cls: "pink", title: "🍛 Curry night made easy", text: "Spice mix, basmati rice and paratha — all in one shop.", href: "#/category/curry" },
+    ],
+    sections: [
+      { title: "Quick essentials", ids: [3200, 3214, 3086, 3219, 3142, 3201, 3202, 2896] },
+      { title: "Curry night made easy", sub: "Everything for a home-cooked curry", ids: [3115, 3117, 3190, 3147, 2961, 3144, 3113, 3197] },
+      { title: "Party & BBQ", ids: [3120, 3206, 3081, 3088, 3091, 3030, 2917, 2987] },
+      { title: "Try something new", sub: "Customer favourites from Bangladesh", ids: [2978, 3185, 2868, 3051, 2983, 3016, 3028, 3134] },
+    ],
+    specials: [3200, 3214, 3081, 3030, 2961, 3115, 2868, 3051],
+    services: [
+      ["🌙", "Open till midnight", "7 days a week"],
+      ["🚚", "Local delivery", "Free over $60 · inner Brisbane"],
+      ["💸", "Western Union", "Send & collect money in store"],
+      ["📦", "Amazon returns", "Drop off parcels · free parking"],
+    ],
+  },
+  bd: {
+    nav: ["fish", "meat", "rice", "spices", "curry", "veg", "shutki", "sweets", "pitha", "snacks", "pickles", "oil", "frozen", "pantry", "drinks", "essentials", "hot"],
+    tiles: ["fish", "meat", "rice", "spices", "curry", "veg", "shutki", "sweets", "pitha", "snacks", "pickles", "oil", "frozen", "pantry", "drinks", "essentials"],
+    discover: [],
+    hero: {
+      kicker: "স্বাগতম — Welcome",
+      title: "দেশের স্বাদ, ব্রিসবেনে",
+      text: "Deshi fish, shutki, pitha, misti doi and all your Radhuni & Pran favourites — delivered or ready for pick-up at Brismart.",
+      cta: ["মাছ বাজার দেখুন", "#/category/fish"],
+    },
+    promos: [
+      { cls: "gold", title: "⭐ এই সপ্তাহের অফার", text: "Special of the week — misti doi, rosh malai and more.", href: "#/specials" },
+      { cls: "pink", title: "🎉 পিঠা পার্বণ", text: "Chitoi & puli pitha, khejur gur and pitha pans.", href: "#/category/pitha" },
+    ],
+    sections: [
+      { title: "এই সপ্তাহের অফার", sub: "Special of the week", ids: [3200, 3151, 3108, 2868, 3213, 3107, 3052, 3051] },
+      { title: "মাছ বাজার", sub: "Frozen deshi fish", ids: [3092, 2999, 3216, 2989, 2990, 2993, 3078, 3161] },
+      { title: "পিঠা পার্বণ", sub: "Pitha season", ids: [3050, 3049, 3027, 3163, 3162, 3134, 3124, 2971] },
+      { title: "শুঁটকি ও ভর্তা", sub: "Shutki & bhorta", ids: [3004, 3006, 3007, 3005, 3003, 3211, 3098, 3176] },
+      { title: "রমজান ও ঈদ", sub: "Ramadan & Eid", ids: [2940, 3173, 2942, 3188, 3172, 2882, 3072, 2959] },
+    ],
+    specials: [3200, 3151, 3108, 2868, 3213, 3107, 3052, 3051],
+    services: [
+      ["🐟", "দেশি মাছ", "New frozen stock every week"],
+      ["🕌", "হালাল মাংস", "Hand-slaughtered chicken & duck"],
+      ["💸", "Western Union", "টাকা পাঠান ও তুলুন"],
+      ["🏪", "Pick-up", "80 Ipswich Rd, Woolloongabba"],
+    ],
+  },
+};
+
+// UI text that differs between views
+const TEXT = {
+  au: {
+    add: "Add to cart", cart: "Cart", search: "Search milk, samosa, butter chicken…",
+    specials: "Specials", shopBy: "Shop by category", discover: "Discover Bangladeshi food",
+    discoverText: "Brismart is Brisbane's Bangladeshi grocer. Curious? Start here.",
+    switchHint: "Shopping for deshi groceries? Switch to the দেশি view.",
+    seeAll: "See all", items: n => `${n} product${n === 1 ? "" : "s"}`,
+  },
+  bd: {
+    add: "কার্টে যোগ করুন", cart: "কার্ট", search: "খুঁজুন: ইলিশ, শুঁটকি, দই, মসলা…",
+    specials: "অফার", shopBy: "ক্যাটাগরি", discover: "",
+    discoverText: "",
+    switchHint: "Looking for everyday items? Switch to the Everyday view.",
+    seeAll: "সব দেখুন", items: n => `${n}টি পণ্য`,
+  },
+};
