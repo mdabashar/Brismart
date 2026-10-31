@@ -55,13 +55,24 @@ async function onSession(session) {
   await loadProducts();
 }
 
+function signInMessage(error) {
+  switch (error.code) {
+    case "invalid_credentials": return "Wrong email or password.";
+    case "email_not_confirmed": return "This account isn't confirmed yet. In Supabase, confirm the user (or recreate it with “Auto Confirm User” ticked).";
+    case "over_request_rate_limit":
+    case "over_email_send_rate_limit": return "Too many attempts. Please wait a minute and try again.";
+    case "email_provider_disabled": return "Email sign-in is turned off in Supabase (Authentication → Sign In / Providers → Email).";
+    default: return "Sign in failed: " + (error.message || "unknown error");
+  }
+}
+
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   $("loginError").textContent = "";
   $("loginBtn").disabled = true;
   const { error } = await db.auth.signInWithPassword({ email: $("email").value.trim(), password: $("password").value });
   $("loginBtn").disabled = false;
-  if (error) $("loginError").textContent = "Sign in failed: check the email and password.";
+  if (error) $("loginError").textContent = signInMessage(error);
   else $("password").value = "";
 });
 
