@@ -59,14 +59,15 @@ main { padding-top: 20px; padding-bottom: 48px; min-height: 60vh; }
   display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-bottom: 28px;
 }
 .hero-main {
-  background: linear-gradient(120deg, var(--green) 0%, #12894d 100%);
+  background: linear-gradient(120deg, #114a26 0%, var(--green) 55%, #1d7a40 100%);
   color: #fff; border-radius: var(--radius); padding: 32px; position: relative; overflow: hidden;
 }
+/* Red sun (Bangladesh) with the logo's kangaroo and the Southern Cross (Australia) */
 .hero-main::after {
-  content: ""; position: absolute; right: -60px; top: -60px; width: 240px; height: 240px;
-  border-radius: 50%; background: var(--red); opacity: .9;
+  content: ""; position: absolute; top: -6%; right: -3%; bottom: -16%; width: 54%;
+  background: url("assets/hero-art.png") right bottom / contain no-repeat;
 }
-.hero-main > * { position: relative; z-index: 1; max-width: 70%; }
+.hero-main > * { position: relative; z-index: 1; max-width: 56%; }
 .hero-main h1 { margin: 0 0 8px; font-size: 34px; line-height: 1.1; letter-spacing: -.5px; }
 .hero-main p { margin: 0 0 20px; opacity: .92; }
 .hero-side { display: grid; gap: 16px; }
@@ -245,7 +246,8 @@ legend { font-weight: 700; font-size: 17px; margin-bottom: 10px; }
   .logo { margin-right: auto; }
   .logo img { height: 46px; }
   .cart-label, .cart-total { display: none; }
-  .hero-main { padding: 24px; }
+  .hero-main { padding: 150px 24px 24px; }
+  .hero-main::after { left: 0; width: auto; height: 150px; bottom: auto; background-position: center top; }
   .hero-main > * { max-width: 100%; }
   .hero-main h1 { font-size: 26px; }
   .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -308,9 +310,6 @@ legend { font-weight: 700; font-size: 17px; margin-bottom: 10px; }
 .cat-grid.small { grid-template-columns: repeat(4, 1fr); }
 
 /* Bangladeshi view theme: red-and-green, Bengali type first */
-.view-bd .hero-main { background: linear-gradient(120deg, #0f5a2c 0%, var(--green) 60%, #1f7a41 100%); }
-.view-bd .hero-main::after { background: var(--red); right: 28px; top: 50%; transform: translateY(-50%); width: 150px; height: 150px; opacity: 1; }
-.view-bd .hero-main > * { max-width: 62%; }
 .view-bd .hero-main h1 { font-family: "Hind Siliguri", Inter, sans-serif; font-size: 40px; }
 .view-bd .cat-nav a.bn { font-size: 15px; }
 .view-bd .section-head h2.bn { font-family: "Hind Siliguri", Inter, sans-serif; font-size: 24px; }
@@ -318,13 +317,11 @@ legend { font-weight: 700; font-size: 17px; margin-bottom: 10px; }
 
 @media (max-width: 900px) {
   .discover { grid-template-columns: 1fr; }
-  .view-bd .hero-main::after { width: 110px; height: 110px; right: -30px; top: -30px; transform: none; }
 }
 @media (max-width: 640px) {
   .view-toggle { order: 4; flex-basis: 100%; }
   .view-toggle button { flex: 1; padding: 7px 10px; }
   .cat-grid.small { grid-template-columns: repeat(2, 1fr); }
   .view-bd .hero-main h1 { font-size: 30px; }
-  .view-bd .hero-main > * { max-width: 100%; }
   .card-img .pimg { padding: 6px; }
 }
